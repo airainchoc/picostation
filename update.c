@@ -1,93 +1,48 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include "pico/stdlib.h"
-#include "pico/bootrom.h"
-#include "pico/bootrom_metadata.h"
-#include "hardware/watchdog.h"
+#include "hardware/flash.h"
 #include "ff.h"
 
-// Set the path to the update file
-#define UPDATE_FILE_PATH "picostation.uf2"
+#define FILENAME "picostation.uf2"
 
-int main() {
-    stdio_init_all();
-
-    // Mount the SD card
+void update() {
     FATFS fs;
-    FRESULT res = f_mount(&fs, "0:/", 1);
+    FRESULT res;
+    DIR dir;
+    FILINFO fno;
+    UINT br;
+    uint8_t buf[256];
+    uint32_t addr = 0;
+    uint32_t size = 0;
+
+    res = f_mount(&fs, "", 1);
     if (res != FR_OK) {
-        printf("Failed to mount SD card: %d\n", res);
-        return 1;
+        return;
     }
 
-    // Check for the presence of the update file
-    FIL file;
-    res = f_open(&file, UPDATE_FILE_PATH, FA_READ);
-    if (res != FR_OK) {
-        printf("Update file not found\n");
-        return 0;
+    res = f_findfirst(&dir, &fno, "", FILENAME);
+    if (res == FR_OK && fno.fname[0] != '.') {
+        FIL file;
+        res = f_open(&file, fno.fname, FA_READ);
+        if (res == FR_OK) {
+            size = f_size(&file);
+
+            // Erase flash
+            flash_range_erase(0, size);
+
+            // Write to flash
+            while (f_read(&file, buf, sizeof(buf), &br) == FR_OK && br > 0) {
+                flash_range_program(addr, buf, br);
+                addr += br;
+            }
+            f_close(&file);
+
+            // Delete file
+            f_unlink(fno.fname);
+        }
+    } else {
+        f_mount(NULL, "", 1);
+        return;
     }
 
-    // Get the size of the update file
-    uint32_t update_size = f_size(&file);
-
-    // Allocate memory for the update buffer
-    uint8_t* update_buffer = (uint8_t*)malloc(update_size);
-    if (!update_buffer) {
-        printf("Failed to allocate memory for update buffer\n");
-        f_close(&file);
-        return 1;
-    }
-
-    // Read the update file into the update buffer
-    UINT bytes_read;
-    res = f_read(&file, update_buffer, update_size, &bytes_read);
-    if (res != FR_OK || bytes_read != update_size) {
-        printf("Failed to read update file\n");
-        f_close(&file);
-        free(update_buffer);
-        return 1;
-    }
-
-    // Close the update file
-    f_close(&file);
-    
-    // Delete the file
-    f_unlink(UPDATE_FILE_PATH);
-    printf("Deleting update.uf2\n");
-    printf("Updating, please wait\n");
-
-    // Disable the watchdog
-    watchdog_disable();
-
-    // Disable interrupts
-    __disable_irq();
-
-    // Switch to the bootrom
-    uint32_t metadata[16];
-    memset(metadata, 0, sizeof(metadata));
-    metadata[0] = BOOTROM_MAGIC | 1;
-    metadata[1] = update_size;
-    metadata[2] = BOOTROM_METADATA_FLAG_VALIDATE | BOOTROM_METADATA_FLAG_ERASE;
-    metadata[3] = BOOTROM_METADATA_TYPE_APP;
-    metadata[4] = BOOTROM_METADATA_ADDR_APP;
-    metadata[5] = (uint32_t)update_buffer;
-    metadata[6] = 0;
-    metadata[7] = 0;
-    metadata[8] = 0;
-    metadata[9] = 0;
-    metadata[10] = 0;
-    metadata[11] = 0;
-    metadata[12] = 0;
-    metadata[13] = 0;
-    metadata[14] = 0;
-    metadata[15] = 0;
-
-    // Jump to the bootrom
-    bootloader_reset(metadata);
-
-    // The code should not reach here, as the bootloader_reset() function will cause a reset
-    // However, we include a return statement to avoid a compiler warning
-    return 0;
+    f_mount(NULL, "", 1);
 }
