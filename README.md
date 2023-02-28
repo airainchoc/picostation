@@ -32,3 +32,4 @@
 - Slow Solder Board (SSB) solder points / checking connection: https://mmmonkey.co.uk/xstation-sony-playstation-install-notes-and-pinout/
 - How to compile (Windows): https://shawnhymel.com/2096/how-to-set-up-raspberry-pi-pico-c-c-toolchain-on-windows-with-vs-code/
 - PCB pinout: <a href="https://ibb.co/mDNDc8C"><img src="https://i.ibb.co/mDNDc8C/pinout.png" alt="pinout" border="0"></a>
+- 3D Printable mount (550X) by @Sadsnifit : https://www.printables.com/fr/model/407224-picostation-mount-for-scph-5502
