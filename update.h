@@ -9,7 +9,7 @@
 #include "hardware/flash.h"
 #include "hardware/sync.h"
 
-#define UPDATE_FILE_PATH "/sdcard/update.uf2"
+#define UPDATE_FILE_PATH "/sdcard/picostation.uf2"
 #define UPDATE_MAGIC_LENGTH 4
 #define UPDATE_MAGIC_NUMBER 0x57f2c384
 
