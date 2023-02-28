@@ -1,18 +1,19 @@
 #ifndef UPDATE_H
 #define UPDATE_H
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include "pico/stdlib.h"
-#include "pico/bootrom.h"
-#include "hardware/flash.h"
-#include "hardware/sync.h"
+// #includes
 
-#define UPDATE_FILE_PATH "/sdcard/picostation.uf2"
-#define UPDATE_MAGIC_LENGTH 4
-#define UPDATE_MAGIC_NUMBER 0x57f2c384
+#include "ff.h"
+#include "hardware/flash.h"
+#include "pico/stdlib.h"
+
+// #defines
+
+#define FILENAME "picostation.uf2"
+
+// Functions
 
 void update();
 
-#endif /* UPDATE_H */
+// End of header file
+#endif
