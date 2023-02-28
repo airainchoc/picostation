@@ -55,6 +55,8 @@ int main() {
     
     // Delete the file
     f_unlink(UPDATE_FILE_PATH);
+    printf("Deleting update.uf2\n");
+    printf("Updating, please wait\n");
 
     // Disable the watchdog
     watchdog_disable();
