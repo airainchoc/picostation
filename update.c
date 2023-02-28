@@ -8,7 +8,7 @@
 #include "ff.h"
 
 // Set the path to the update file
-#define UPDATE_FILE_PATH "update.uf2"
+#define UPDATE_FILE_PATH "picostation.uf2"
 
 int main() {
     stdio_init_all();
