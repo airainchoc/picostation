@@ -151,8 +151,7 @@ void initialize() {
 
 int main() {
     //EDIT
-    update();
-    return 0;
+    //update();
     //ENDEDIT
     stdio_init_all();
 
