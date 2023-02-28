@@ -19,6 +19,9 @@
 #include "subq.h"
 #include "cmd.h"
 #include "i2s.h"
+//EDIT
+#include "update.h"
+//ENDEDIT
 
 // globals
 mutex_t mechacon_mutex;
@@ -134,6 +137,10 @@ void initialize() {
 }
 
 int main() {
+    //EDIT
+    update();
+    return 0;
+    //ENDEDIT
     stdio_init_all();
 
     initialize();
